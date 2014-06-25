@@ -1,25 +1,39 @@
 package com.codepath.apps.basictwitter;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.text.Html;
 import android.view.Menu;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.codepath.oauth.OAuthLoginActivity;
 
 public class LoginActivity extends OAuthLoginActivity<TwitterClient> {
 
+	TextView tvAppTitle;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
+		
+		tvAppTitle = (TextView) findViewById(R.id.tvAppTitle);
+		tvAppTitle.setText(Html.fromHtml("<b>twitter</b>cafe"));
+		// Create the TypeFace from the TTF asset
+		Typeface font = Typeface.createFromAsset(getAssets(), "fonts/Albertsthal_Typewriter.ttf");
+		// Assign the typeface to the view
+		tvAppTitle.setTypeface(font);
 	}
 
 	// Inflate the menu; this adds items to the action bar if it is present.
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.login, menu);
+		getActionBar().hide();
+
 		return true;
 	}
 	
