@@ -35,7 +35,9 @@ Week 3 project, Twitter Client (TwitterCafe) with all the required, advanced and
  - User always sees the timeline partially hidden below the fragments
 
 
-Walkthrough of Imagely: <br> <br>
-![Video Walkthrough](twittercafe.gif)
+Walkthrough of twitterCafe: <br> <br>
+![Video Walkthrough](twittercafe_1.gif)
+
+![Video Walkthrough](twittercafe_2.gif)
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
