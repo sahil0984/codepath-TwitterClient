@@ -63,7 +63,10 @@ public class TimelineActivity extends FragmentActivity implements OnDataPass {
 		
 		populateTimelineFromLocalDb();
 		
-		getUserCredentials();
+		if (isNetworkAvailable() == true) {
+
+			getUserCredentials();
+		}
 		
 		lvTweets.setOnItemClickListener(new OnItemClickListener() {
 			@Override
@@ -162,8 +165,8 @@ public class TimelineActivity extends FragmentActivity implements OnDataPass {
 	public void populateTimeline (long since_id, long max_id, final int type){
 		//long max_id = since_id + numTweets;
 		if (isNetworkAvailable() == true) {
-			Toast.makeText(getApplicationContext(), "since_id " + since_id + "max_id " + max_id, Toast.LENGTH_SHORT)
-			.show();
+			//Toast.makeText(getApplicationContext(), "since_id " + since_id + "max_id " + max_id, Toast.LENGTH_SHORT)
+			//.show();
 			numQueries = numQueries + 1;
 			
 			if (aTweets.getCount() == 0) {
