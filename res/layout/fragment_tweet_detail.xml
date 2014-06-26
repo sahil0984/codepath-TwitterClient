@@ -132,6 +132,14 @@
 			android:text="@string/favorite_button_label"
 			style="@style/ButtonAllButton" />
 	    
-	        
+	     <TextView
+	        android:id="@+id/tvRetweetCount"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentRight="true"
+			android:layout_below="@+id/ivEmbedImage"
+	        android:paddingRight="5dp"
+	        style="@style/TextViewRetweetCount"
+	        android:text="retweets 0" />
 	</RelativeLayout>
 </ScrollView>

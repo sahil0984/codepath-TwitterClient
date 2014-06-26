@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.activeandroid.ActiveAndroid;
 import com.codepath.apps.basictwitter.ComposeDialog.OnDataPass;
 import com.codepath.apps.basictwitter.models.Tweet;
+import com.codepath.apps.basictwitter.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import eu.erikw.PullToRefreshListView.OnRefreshListener;
@@ -42,6 +43,8 @@ public class TimelineActivity extends FragmentActivity implements OnDataPass {
 	private long youngestTweetId;
 	
 	private int numQueries;
+	
+	private User myUser;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -60,14 +63,16 @@ public class TimelineActivity extends FragmentActivity implements OnDataPass {
 		
 		populateTimelineFromLocalDb();
 		
+		getUserCredentials();
+		
 		lvTweets.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View parent, int position,
 					long arg3) {
 				Tweet tweet = tweets.get(position);
 				android.app.FragmentManager fm = getFragmentManager();
-				TweetDetailDialog editFilterDialog = TweetDetailDialog.newInstance(tweet);
-				editFilterDialog.show(fm, "fragment_filters");
+				TweetDetailDialog tweetDetailDialog = TweetDetailDialog.newInstance(tweet, myUser);
+				tweetDetailDialog.show(fm, "fragment_tweet_detail");
 			}
 		});
 		
@@ -117,6 +122,23 @@ public class TimelineActivity extends FragmentActivity implements OnDataPass {
 		});
 	}
 	
+	private void getUserCredentials() {		
+		client.getCredentials(new JsonHttpResponseHandler(){
+			@Override
+			public void onSuccess(JSONObject json) {						
+				myUser = User.fromJSON(json);
+			}
+			
+			public void onFailure(Throwable e, String s) {
+				Log.d("debug", e.toString());
+				Log.d("debug", s.toString());
+				Toast.makeText(getApplicationContext(), "Error identifying the user.", Toast.LENGTH_SHORT)
+				.show();
+			}
+			
+		});
+	}
+
 	private void populateTimelineFromLocalDb() {
 		//try {
 			aTweets.clear();
@@ -218,26 +240,50 @@ public class TimelineActivity extends FragmentActivity implements OnDataPass {
 
 	private void composeMessage() {
 			android.app.FragmentManager fm = getFragmentManager();
-			ComposeDialog editFilterDialog = ComposeDialog.newInstance("timeline");
-			editFilterDialog.show(fm, "fragment_compose");
+			ComposeDialog composeDialog = ComposeDialog.newInstance("compose", myUser);
+			composeDialog.show(fm, "fragment_compose");
 	}
 	
+//	public void detailTweetDialog(Tweet tweet) {
+//		//Tweet tweet = tweets.get(position);
+//		android.app.FragmentManager fm = getFragmentManager();
+//		TweetDetailDialog tweetDetailDialog = TweetDetailDialog.newInstance(tweet);
+//		tweetDetailDialog.show(fm, "fragment_tweet_detail");
+//	}
+	
 	@Override
-	public void onDataPass(String newTweet, long replyTweetUid) {
+	public void onDataPass(String newTweet, long replyTweetUid, String callFor) {
 	    //Log.d("LOG","hello " + data);
 
-		client.postUpdate(newTweet, replyTweetUid, new JsonHttpResponseHandler(){
-			@Override
-			public void onSuccess(JSONObject json) {
-				aTweets.insert(Tweet.fromJSON(json), 0);
-			}
-			
-			@Override
-			public void onFailure(Throwable e, String s) {
-				Log.d("debug", e.toString());
-				Log.d("debug", s.toString());
-			}
-		});
+		if (callFor == "compose" || callFor == "reply") {
+			client.postUpdate(newTweet, replyTweetUid, new JsonHttpResponseHandler(){
+				@Override
+				public void onSuccess(JSONObject json) {
+					aTweets.insert(Tweet.fromJSON(json), 0);
+				}
+				
+				@Override
+				public void onFailure(Throwable e, String s) {
+					Log.d("debug", e.toString());
+					Log.d("debug", s.toString());
+				}
+			});
+		} else  if (callFor == "retweet") {
+			client.postRetweet(replyTweetUid, new JsonHttpResponseHandler(){
+				@Override
+				public void onSuccess(JSONObject json) {
+					aTweets.insert(Tweet.fromJSON(json), 0);
+				}
+				
+				@Override
+				public void onFailure(Throwable e, String s) {
+					Log.d("debug", e.toString());
+					Log.d("debug", s.toString());
+				}
+			});
+		}
+		
+		
 	}
 	
 	

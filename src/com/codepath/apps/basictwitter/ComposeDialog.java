@@ -4,7 +4,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.codepath.apps.basictwitter.models.Tweet;
+import com.codepath.apps.basictwitter.models.User;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -20,11 +22,15 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ComposeDialog extends DialogFragment {
 
-	private EditText etTweetBody;
+    private ImageView ivProfileImage;
+    private TextView tvUserName;
+    private TextView tvScreenName;
+    private EditText etTweetBody;
 	private TextView tvTweetCharLeft;
 	private Button btnSendTweet;
 	
@@ -33,27 +39,31 @@ public class ComposeDialog extends DialogFragment {
 	private String newTweetBody;
 	
 	private Tweet replyTweet;
-	private String callFrom;
+	private String callFor;
+	
+	private User myUser;
 	
 	public ComposeDialog () {
 		//Empty constructor required for Dialog Fragment
 	}
 	
-	public static ComposeDialog newInstance(String callFrom) {
+	public static ComposeDialog newInstance(String callFor, User user) {
 		ComposeDialog  frag = new ComposeDialog();
 		Bundle args = new Bundle();
 		
-		args.putSerializable("callFrom", callFrom);
+		args.putSerializable("callFor", callFor);
+		args.putSerializable("user", user);
 	    frag.setArguments(args);
 	    return frag;
 	}
 	
-	public static ComposeDialog newInstance(String callFrom, Tweet replyTweet) {
+	public static ComposeDialog newInstance(String callFor, Tweet replyTweet, User user) {
 		ComposeDialog  frag = new ComposeDialog();
 		Bundle args = new Bundle();
 		
-		args.putSerializable("callFrom", callFrom);
+		args.putSerializable("callFor", callFor);
 		args.putSerializable("tweet", replyTweet);
+		args.putSerializable("user", user);
 	    frag.setArguments(args);
 
 	    return frag;
@@ -65,21 +75,42 @@ public class ComposeDialog extends DialogFragment {
         //getDialog().setTitle("Edit Filters");
         
 		View view = inflater.inflate(R.layout.fragment_compose, container);
+	    ivProfileImage = (ImageView) view.findViewById(R.id.ivProfileImage);
+	    tvUserName = (TextView) view.findViewById(R.id.tvUserName);
+	    tvScreenName = (TextView) view.findViewById(R.id.tvScreenName);
 		etTweetBody = (EditText) view.findViewById(R.id.etTweetBody);
 		tvTweetCharLeft = (TextView) view.findViewById(R.id.tvTweetCharLeft);
 		btnSendTweet = (Button) view.findViewById(R.id.btnSendTweet); 
 				
 		
-		callFrom = (String) getArguments().getSerializable("callFrom");
-		if (callFrom == "timeline") {
+		callFor = (String) getArguments().getSerializable("callFor");
+		myUser = (User) getArguments().getSerializable("user");
+		
+	    ivProfileImage.setImageResource(android.R.color.transparent);
+	    ImageLoader imageLoader = ImageLoader.getInstance();
+	    
+	    imageLoader.displayImage(myUser.getProfileImageUrl(), ivProfileImage);
+	    tvUserName.setText(myUser.getName());
+	    tvScreenName.setText("@" + myUser.getScreenName());
+		
+		if (callFor == "compose") {
 			btnSendTweet.setText("Tweet");
-		} else if (callFrom == "detailDialog") {
+		} else if (callFor == "reply") {
 			replyTweet = (Tweet) getArguments().getSerializable("tweet");
 			etTweetBody.setText("@" + replyTweet.getUser().getScreenName() + " ");
 			etTweetBody.setSelection(etTweetBody.getText().length());
 			etTweetBody.setFocusableInTouchMode(true);
 			etTweetBody.requestFocus();
 			btnSendTweet.setText("Reply");
+		} else if (callFor == "retweet") {
+			replyTweet = (Tweet) getArguments().getSerializable("tweet");
+			etTweetBody.setText(replyTweet.getBody());
+			etTweetBody.setSelection(etTweetBody.getText().length());
+			etTweetBody.setFocusableInTouchMode(true);
+			etTweetBody.requestFocus();
+			btnSendTweet.setText("Retweet");
+			etTweetBody.setFocusable(false);
+			etTweetBody.setClickable(false);
 		}
 		
 		//tvTweetCharLeft.setText("140");
@@ -122,26 +153,13 @@ public class ComposeDialog extends DialogFragment {
 				newTweetBody = etTweetBody.getText().toString();
 				//dataPasser.onDataPass(newTweetBody);
 				
-				if (callFrom == "timeline") {
-					dataPasser.onDataPass(newTweetBody, 0);
-				} else if (callFrom == "detailDialog") {
-					dataPasser.onDataPass(newTweetBody, replyTweet.getUid());
+				if (callFor == "compose") {
+					dataPasser.onDataPass(newTweetBody, 0, "compose");
+				} else if (callFor == "reply") {
+					dataPasser.onDataPass(newTweetBody, replyTweet.getUid(), "reply");
+				} else if (callFor == "retweet") {
+					dataPasser.onDataPass(newTweetBody, replyTweet.getUid(), "retweet");
 				}
-
-//				client.postUpdate(newTweetBody, new JsonHttpResponseHandler(){
-//					@Override
-//					public void onSuccess(JSONObject json) {
-//						newTweet = Tweet.fromJSON(json);
-//					    dataPasser.onDataPass(newTweet);
-//
-//					}
-//					
-//					@Override
-//					public void onFailure(Throwable e, String s) {
-//						Log.d("debug", e.toString());
-//						Log.d("debug", s.toString());
-//					}
-//				});
 			    
 			    dismiss();
 
@@ -164,7 +182,7 @@ public class ComposeDialog extends DialogFragment {
 	//----------------------------------------
 	//To pass data back to main activity, create an interface and implement it in main activity
 	public interface OnDataPass {
-	    public void onDataPass(String newTweetBody, long replyTweetUid);
+	    public void onDataPass(String newTweetBody, long replyTweetUid, String callFor);
 	}
 	OnDataPass dataPasser;
 	@Override

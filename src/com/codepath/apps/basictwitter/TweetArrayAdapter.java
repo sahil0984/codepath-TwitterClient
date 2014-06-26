@@ -12,6 +12,7 @@ import android.text.format.DateUtils;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.ArrayAdapter;
@@ -23,19 +24,21 @@ import com.codepath.apps.basictwitter.models.Tweet;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
-	private static final int FOCUS_BLOCK_DESCENDANTS = 393216;
-
+	
+	private TimelineActivity activity;
+	
 	public TweetArrayAdapter(Context context, List<Tweet> objects) {
 		super(context, 0, objects);
+        activity = (TimelineActivity) context;
 	}
 
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 	       // Get the data item for this position
-	       Tweet tweet = getItem(position);    
+	       final Tweet tweet = getItem(position);    
 	       ViewHolder holder;
-	       
+
 	       // Check if an existing view is being reused, otherwise inflate the view
 	       if (convertView == null) {
 	    	   
@@ -52,6 +55,7 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 	  	    holder.ivVerifiedStatus = (ImageView) convertView.findViewById(R.id.ivVerifiedStatus);
 	  
 	  		convertView.setTag(holder);
+
 	       } else {
 	    	  
 	   	    holder = (ViewHolder) convertView.getTag();
@@ -81,13 +85,25 @@ public class TweetArrayAdapter extends ArrayAdapter<Tweet> {
 	    	   params.addRule(RelativeLayout.RIGHT_OF, holder.tvUserName.getId());
 	    	   holder.tvScreenName.setLayoutParams(params); */
 	       }
+
 	       
-	       holder.tvBody.setLinksClickable(false);
+//	       convertView.setOnClickListener(new OnClickListener() {
+//
+//				@Override
+//				public void onClick(View v) {
+//					TimelineActivity sct = (TimelineActivity)activity;
+//	            	sct.detailTweetDialog(tweet);
+//				}
+//			});
+	       
+	       //holder.tvBody.setLinksClickable(false);
 	       //holder.tvBody.setClickable(true);
-	       holder.tvBody.setFocusable(false);
-	       holder.tvBody.setFocusableInTouchMode(false);
+	       //holder.tvBody.setFocusable(false);
+	       //holder.tvBody.setFocusableInTouchMode(false);
 
+	       //((ViewGroup) convertView).setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
 
+	       
 	       // Return the completed view to render on screen
 	       return convertView;
 	}

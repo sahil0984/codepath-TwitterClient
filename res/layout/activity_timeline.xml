@@ -14,6 +14,8 @@
         android:layout_alignParentTop="true"
         android:divider="@null"
 		android:dividerHeight="0dp"
+		android:focusable="false"
+		
 		android:listSelector="@android:color/transparent" >
         
     </eu.erikw.PullToRefreshListView>

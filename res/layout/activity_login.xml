@@ -21,7 +21,8 @@
         android:layout_above="@+id/btnLogin"
         android:layout_marginBottom="40dp"
         style="@style/LoginTextView"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true" 
+        android:text="twittercafe"/>
         
     <Button
         android:id="@+id/btnLogin"

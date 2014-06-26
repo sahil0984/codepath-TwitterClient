@@ -11,6 +11,7 @@
 	android:layout_marginLeft="8dp"
 	android:layout_marginRight="8dp"
 	android:layout_marginTop="8dp"
+	android:descendantFocusability="blocksDescendants"
     android:background="@color/white"
 >    
     <ImageView
@@ -41,8 +42,8 @@
         android:layout_toRightOf="@+id/ivProfileImage"
         android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
-                android:autoLink="web"
-        
+			android:autoLink="all"
+            android:linksClickable="true"        
         style="@style/TextViewBody"    
         android:text="This is a text body" />
 

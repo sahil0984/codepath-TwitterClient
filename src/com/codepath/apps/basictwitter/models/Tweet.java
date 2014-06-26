@@ -31,6 +31,10 @@ public class Tweet extends Model implements Serializable {
 	private User user;
     @Column(name = "mediaUrl")
 	private String mediaUrl;
+    @Column(name = "retweetCount")
+	private int retweetCount;
+    @Column(name = "favorited")
+	private boolean favorited;
 
 	//GETTERS
 	public String getBody() {
@@ -53,6 +57,13 @@ public class Tweet extends Model implements Serializable {
 		return mediaUrl;
 	}
 	
+	public int getRetweetsCount() {
+		return retweetCount;
+	}	
+	
+	public boolean getFavorited() {
+		return favorited;
+	}
 	//SETTERS
 //	public void setBody(String newTweetBody) {
 //		this.body = newTweetBody;
@@ -106,6 +117,8 @@ public class Tweet extends Model implements Serializable {
 				e.printStackTrace();
 				tweet.mediaUrl = null;
 			}
+			tweet.retweetCount = jsonObject.getInt("retweet_count");
+			tweet.favorited = jsonObject.getBoolean("favorited");
 		}
 		catch (JSONException e) {
 			e.printStackTrace();
