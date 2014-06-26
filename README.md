@@ -32,6 +32,7 @@ Week 3 project, Twitter Client (TwitterCafe) with all the required, advanced and
  - User can Favorite or Unfavorite a tweet from details view
  - User can see the retweet count in details view
  - Everytime the app is opened, the tweets are retrieved from local sql database and no unnecessary requests are sent
+ - User can see verfied status of other people on the timeline
  - Compose fragment is reused for reply and retweet
  - User always sees the timeline partially hidden below the fragments
 
